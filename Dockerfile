@@ -166,4 +166,19 @@ RUN chmod +x /usr/local/bin/start.sh
 EXPOSE 5601 9200 9300 5044
 VOLUME /var/lib/elasticsearch
 
+# ChrisPrice Install Plugins
+
+ENV ES_HOME /opt/elasticsearch
+WORKDIR ${ES_HOME}
+
+RUN CONF_DIR=/etc/elasticsearch gosu elasticsearch bin/elasticsearch-plugin \
+    install ingest-geoip
+RUN CONF_DIR=/etc/elasticsearch gosu elasticsearch bin/elasticsearch-plugin \
+    install ingest-user-agent
+RUN CONF_DIR=/etc/elasticsearch gosu elasticsearch bin/elasticsearch-plugin \
+    install x-pack
+
+WORKDIR ${KIBANA_HOME}
+RUN gosu kibana bin/kibana-plugin install x-pack
+
 CMD [ "/usr/local/bin/start.sh" ]
